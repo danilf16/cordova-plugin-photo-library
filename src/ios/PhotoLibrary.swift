@@ -3,9 +3,9 @@ import Photos
 import WebKit
 
 @objc(PhotoLibrary) class PhotoLibrary : CDVPlugin {
-    
+
     var interceptor: PhotoLibraryInterceptor?
-    
+
     lazy var concurrentQueue: DispatchQueue = DispatchQueue(label: "photo-library.queue.plugin", qos: DispatchQoS.utility, attributes: [.concurrent])
 
     override func pluginInitialize() {
@@ -17,12 +17,12 @@ import WebKit
         // self.service.stopCaching()
         NSLog("-- MEMORY WARNING --")
     }
-    
+
     @objc func overrideSchemeTask(_ urlSchemeTask: WKURLSchemeTask?) -> Bool {
         guard let urlSchemeTask = urlSchemeTask else {
             return false
         }
-        
+
         return interceptor?.handleSchemeTask(urlSchemeTask) ?? false
     }
 
@@ -306,12 +306,12 @@ import WebKit
             let album = command.arguments[1] as! String
 
 
-            service.saveVideo(url, album: album) { (_ libraryItem: NSDictionary?, error: String?) in
+            service.saveVideo(url, album: album) { (assetId: String?, error: String?) in
                 if (error != nil) {
                     let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error)
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 } else {
-                    let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: libraryItem as! [String: AnyObject]?)
+                    let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: assetId)
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId    )
                 }
             }
